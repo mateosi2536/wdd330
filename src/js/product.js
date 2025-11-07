@@ -1,35 +1,20 @@
-import { setLocalStorage } from './utils.mjs';
 import ProductData from './ProductData.mjs';
+import ProductDetails from './ProductDetails.mjs';
+import { getParam } from './utils.mjs';
 
+const productId = getParam('product');
 const dataSource = new ProductData('tents');
+const productDetails = new ProductDetails(productId, dataSource);
 
-function addProductToCart(product) {
-  let storedCart = localStorage.getItem('so-cart');
-  let cart = [];
-
-  if (storedCart) {
-    try {
-      const parsed = JSON.parse(storedCart);
-
-      cart = Array.isArray(parsed) ? parsed : [parsed];
-    } catch (e) {
-      console.error('Error parseando so-cart, reiniciando carrito', e);
-      cart = [];
-    }
-  }
-
-  // Agregar el producto nuevo
-  cart.push(product);
-
-  setLocalStorage('so-cart', cart);
-}
-// add to cart button event handler
-async function addToCartHandler(e) {
-  const product = await dataSource.findProductById(e.target.dataset.id);
-  addProductToCart(product);
+async function init() {
+  const product = await dataSource.findProductById(productId);
+  const data = await dataSource.getData();
+  
+  console.log(productId);
+  console.log(product);
+  console.log(data);
+  
+  productDetails.init();
 }
 
-// add listener to Add to Cart button
-document
-  .getElementById('addToCart')
-  .addEventListener('click', addToCartHandler);
+init();
