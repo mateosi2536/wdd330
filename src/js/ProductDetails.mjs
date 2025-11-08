@@ -51,64 +51,33 @@ export default class ProductDetails {
             ? Math.round((p.ListPrice - p.FinalPrice) / p.ListPrice * 100)
             : 0;
 
-        // Usa p.Image directamente (no p.Images)
         const imageSrc = p.Image || '/images/no-image.jpg';
 
-        document.documentElement.innerHTML = `
-    <!doctype html>
-    <html lang="en">
-      <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Sleep Outside | ${p.Name}</title>
-        <link rel="stylesheet" href="../css/style.css" />
-        <script src="../js/product.js" type="module"></script>
-      </head>
-      <body>
-        <header class="divider">
-          <div class="logo">
-            <img src="/images/noun_Tent_2517.svg" alt="tent image for logo" />
-            <a href="../index.html"> Sleep<span class="highlight">Outside</span></a>
-          </div>
-          <div class="cart">
-            <a href="../cart/index.html">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-                <!-- SVG del carrito -->
-              </svg>
-            </a>
-          </div>
-        </header>
+        // SOLO RENDERIZA EL CONTENIDO DEL PRODUCTO
+        const container = document.getElementById('product-container');
+        container.innerHTML = `
+    <section class="product-detail">
+      <h3>${p.Brand.Name}</h3>
+      <h2 class="divider">${p.Name}</h2>
+      <img class="divider" src="${imageSrc}" alt="${p.Name}" />
 
-        <main class="divider">
-          <section class="product-detail">
-            <h3>${p.Brand.Name}</h3>
-            <h2 class="divider">${p.Name}</h2>
+      ${hasDiscount ? `
+        <p class="product-card__price">
+          <del>$${p.ListPrice}</del>
+          <strong>$${p.FinalPrice}</strong>
+          <sup class="product-card__discount">-${discount}%</sup>
+        </p>
+      ` : `
+        <p class="product-card__price">$${p.FinalPrice}</p>
+      `}
 
-            <!-- IMAGEN CORREGIDA -->
-            <img class="divider" src="${imageSrc}" alt="${p.Name}" />
+      <p class="product__color">${p.Colors[0]?.ColorName || 'N/A'}</p>
+      <p class="product__description">${p.DescriptionHtmlSimple}</p>
 
-            ${hasDiscount ? `
-              <p class="product-card__price">
-                <del>$${p.ListPrice}</del>
-                <strong>$${p.FinalPrice}</strong>
-                <sup class="product-card__discount">-${discount}%</sup>
-              </p>
-            ` : `
-              <p class="product-card__price">$${p.FinalPrice}</p>
-            `}
-
-            <p class="product__color">${p.Colors[0]?.ColorName || 'N/A'}</p>
-            <p class="product__description">${p.DescriptionHtmlSimple}</p>
-
-            <div class="product-detail__add">
-              <button id="addToCart" data-id="${p.Id}">Add to Cart</button>
-            </div>
-          </section>
-        </main>
-
-        <footer>©NOT a real business</footer>
-      </body>
-    </html>
+      <div class="product-detail__add">
+        <button id="addToCart" data-id="${p.Id}">Add to Cart</button>
+      </div>
+    </section>
   `;
     }
 }
