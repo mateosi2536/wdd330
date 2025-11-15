@@ -51,9 +51,8 @@ export default class ProductDetails {
             ? Math.round((p.ListPrice - p.FinalPrice) / p.ListPrice * 100)
             : 0;
 
-        const imageSrc = p.Image || '/images/no-image.jpg';
+        const imageSrc = p.Images?.PrimaryLarge || '/images/no-image.jpg';
 
-        // SOLO RENDERIZA EL CONTENIDO DEL PRODUCTO
         const container = document.getElementById('product-container');
         container.innerHTML = `
     <section class="product-detail">
