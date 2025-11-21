@@ -2,59 +2,59 @@ import { setLocalStorage } from './utils.mjs';
 
 // src/js/ProductDetails.mjs
 export default class ProductDetails {
-    constructor(productId, dataSource) {
-        this.productId = productId;
-        this.product = {};
-        this.dataSource = dataSource;
+  constructor(productId, dataSource) {
+    this.productId = productId;
+    this.product = {};
+    this.dataSource = dataSource;
+  }
+
+  async init() {
+    this.product = await this.dataSource.findProductById(this.productId);
+
+    this.renderProductPage();
+
+    document.getElementById('addToCart')
+      .addEventListener('click', this.addToCart.bind(this));
+  }
+
+  addProductToCart(product) {
+    let storedCart = localStorage.getItem('so-cart');
+    let cart = [];
+
+    if (storedCart) {
+      try {
+        const parsed = JSON.parse(storedCart);
+
+        cart = Array.isArray(parsed) ? parsed : [parsed];
+      } catch (e) {
+        console.error('Error parsing so-cart, restarting cart', e);
+        cart = [];
+      }
     }
 
-    async init() {
-        this.product = await this.dataSource.findProductById(this.productId);
+    cart.push(product);
 
-        this.renderProductPage();
+    setLocalStorage('so-cart', cart);
+  }
 
-        document.getElementById('addToCart')
-            .addEventListener('click', this.addToCart.bind(this));
-    }
+  addToCart() {
+    let cart = JSON.parse(localStorage.getItem('so-cart') || '[]');
+    if (!Array.isArray(cart)) cart = [cart];
+    cart.push(this.product);
+    setLocalStorage('so-cart', cart);
+  }
 
-    addProductToCart(product) {
-        let storedCart = localStorage.getItem('so-cart');
-        let cart = [];
+  renderProductPage() {
+    const p = this.product;
+    const hasDiscount = p.ListPrice && p.ListPrice > p.FinalPrice;
+    const discount = hasDiscount
+      ? Math.round((p.ListPrice - p.FinalPrice) / p.ListPrice * 100)
+      : 0;
 
-        if (storedCart) {
-            try {
-                const parsed = JSON.parse(storedCart);
+    const imageSrc = p.Images?.PrimaryLarge || '/images/no-image.jpg';
 
-                cart = Array.isArray(parsed) ? parsed : [parsed];
-            } catch (e) {
-                console.error('Error parsing so-cart, restarting cart', e);
-                cart = [];
-            }
-        }
-
-        cart.push(product);
-
-        setLocalStorage('so-cart', cart);
-    }
-
-    addToCart() {
-        let cart = JSON.parse(localStorage.getItem('so-cart') || '[]');
-        if (!Array.isArray(cart)) cart = [cart];
-        cart.push(this.product);
-        setLocalStorage('so-cart', cart);
-    }
-
-    renderProductPage() {
-        const p = this.product;
-        const hasDiscount = p.ListPrice && p.ListPrice > p.FinalPrice;
-        const discount = hasDiscount
-            ? Math.round((p.ListPrice - p.FinalPrice) / p.ListPrice * 100)
-            : 0;
-
-        const imageSrc = p.Images?.PrimaryLarge || '/images/no-image.jpg';
-
-        const container = document.getElementById('product-container');
-        container.innerHTML = `
+    const container = document.getElementById('product-container');
+    container.innerHTML = `
     <section class="product-detail">
       <h3>${p.Brand.Name}</h3>
       <h2 class="divider">${p.Name}</h2>
@@ -78,5 +78,5 @@ export default class ProductDetails {
       </div>
     </section>
   `;
-    }
+  }
 }
