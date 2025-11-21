@@ -1,34 +1,34 @@
 import { renderListWithTemplate } from './utils.mjs';
 
 export default class ProductList {
-    constructor(category, dataSource, listElement) {
-        this.category = category;
-        this.dataSource = dataSource;
-        this.listElement = listElement;
-    }
+  constructor(category, dataSource, listElement) {
+    this.category = category;
+    this.dataSource = dataSource;
+    this.listElement = listElement;
+  }
 
-    async init() {
-        const products = await this.dataSource.getData(this.category);
-        this.renderList(products);
-    }
+  async init() {
+    const products = await this.dataSource.getData(this.category);
+    this.renderList(products);
+  }
 
-    renderList(products) {
-        renderListWithTemplate(
-            this.productCardTemplate,
-            this.listElement,
-            products,
-            'beforeend',
-            true
-        );
-    }
+  renderList(products) {
+    renderListWithTemplate(
+      this.productCardTemplate,
+      this.listElement,
+      products,
+      'beforeend',
+      true
+    );
+  }
 
-    productCardTemplate(product) {
-        const hasDiscount = product.SuggestedRetailPrice && product.FinalPrice < product.SuggestedRetailPrice;
-        const discountPercent = hasDiscount
-            ? Math.round((product.SuggestedRetailPrice - product.FinalPrice) / product.SuggestedRetailPrice * 100)
-            : 0;
+  productCardTemplate(product) {
+    const hasDiscount = product.SuggestedRetailPrice && product.FinalPrice < product.SuggestedRetailPrice;
+    const discountPercent = hasDiscount
+      ? Math.round((product.SuggestedRetailPrice - product.FinalPrice) / product.SuggestedRetailPrice * 100)
+      : 0;
 
-        return `
+    return `
             <li class="product-card">
               <a href="/product_pages/?product=${product.Id}">
                 ${hasDiscount ? `<span class="product-card__discount-badge">-${discountPercent}%</span>` : ''}
@@ -46,5 +46,5 @@ export default class ProductList {
               </a>
             </li>
         `;
-    }
+  }
 }
